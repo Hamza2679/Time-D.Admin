@@ -5,7 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:country_picker/country_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../forgetPassword/pages/forgetPassword_Pages.dart';
+import '../../utils/colors.dart';
+import '../home/home_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -57,7 +59,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       return;
     }
 
-    final url = Uri.parse('$baseUrl/auth/login');
+    final url = Uri.parse('https://hello-delivery.onrender.com/api/v1/admin/login');
 
     try {
       final response = await http.post(
@@ -91,7 +93,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         await prefs.setString('lastName', user['lastName'] ?? '');
         await prefs.setString('profileImage', user['profileImage'] ?? '');
 
-        Get.offAll(() => MainPage());
+        Get.offAll(() => HomePage());
       } else {
         final responseBody = json.decode(response.body);
         _showMessage(responseBody['message'] ?? 'Login failed. Please try again.', redColor);
@@ -103,18 +105,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     }
   }
 
-
-
   Future<void> _loginWithEmail() async {
     final email = _emailController.text;
     final password = _emailPasswordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      _showMessage('Please fill in both fields.',redColor);
+      _showMessage('Please fill in both fields.', redColor);
       return;
     }
 
-    final url = Uri.parse('$baseUrl/auth/login');
+    final url = Uri.parse('https://hello-delivery.onrender.com/api/v1/admin/login');
 
     try {
       final response = await http.post(
@@ -129,13 +129,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       );
 
       if (response.statusCode == 201) {
-        _showMessage('logged in success fully.',greenColor);
+        _showMessage('Logged in successfully.', greenColor);
         final responseBody = json.decode(response.body);
         final accessToken = responseBody['access_token'] as String?;
         final user = responseBody['user'] as Map<String, dynamic>?;
 
         if (accessToken == null || user == null) {
-          _showMessage('Invalid response from server. Please try again.',redColor);
+          _showMessage('Invalid response from server. Please try again.', redColor);
           return;
         }
 
@@ -148,17 +148,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         await prefs.setString('lastName', user['lastName'] ?? '');
         await prefs.setString('profileImage', user['profileImage'] ?? '');
 
-        Get.offAll(() => MainPage());
+        Get.offAll(() => HomePage());
       } else {
         final responseBody = json.decode(response.body);
-        _showMessage(
-            responseBody['message'] ?? 'Login failed. Please try again.',redColor);
+        _showMessage(responseBody['message'] ?? 'Login failed. Please try again.', redColor);
       }
     } catch (error, stackTrace) {
       print("Error: $error");
       print("StackTrace: $stackTrace");
-      _showMessage(
-          'An error occurred. Please check your internet connection and try again.',redColor);
+      _showMessage('An error occurred. Please check your internet connection and try again.', redColor);
     }
   }
 
@@ -181,7 +179,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: Text('Login',style: TextStyle(color: primaryTextColor),),
+        title: Text('Admin',style: TextStyle(color: primaryTextColor),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -261,26 +259,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                         obscureText: !_isPhonePasswordVisible,
                       ),
-                      SizedBox(height: 8.0),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ForgotPasswordPage()),
-                            );
-                          },
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              color: primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
                       SizedBox(height: 32.0),
 
                       ElevatedButton(
@@ -342,26 +320,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                         obscureText: !_isEmailPasswordVisible,
                       ),
-                      SizedBox(height: 8.0),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ForgotPasswordPage()),
-                            );
-                          },
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              color: primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
                       SizedBox(height: 32.0),
 
 
@@ -399,21 +357,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 ],
               ),
             ),
-            SizedBox(height: 16.0),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignUpPage()),
-                );
-              },
-              child: Text(
-                "Don't have an account? Sign Up Here",
-                style: TextStyle(
-                    color: primaryColor,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
           ],
         ),
       ),
@@ -421,3 +364,4 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   }
 
 }
+
